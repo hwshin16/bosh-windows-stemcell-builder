@@ -161,7 +161,7 @@ Dir.mktmpdir do |dir|
   File.write("#{dir}/packer-vmware-iso.ovf", f.to_s)
   ova_file_path = File.absolute_path(ova_file[0])
   Dir.chdir(dir) do
-    exec_command("tar cf #{ova_file_path} *")
+    exec_command("tar cf #{ova_file_path} packer-vmware-iso.ovf packer-vmware-iso.mf packer-vmware-iso-disk1.vmdk")
   end
 end
 

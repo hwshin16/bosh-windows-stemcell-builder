@@ -120,7 +120,6 @@
     {
       "type": "windows-shell",
       "scripts": [
-        "scripts/compile-dotnet-assemblies.bat",
         "scripts/enable-rdp.bat",
         "scripts/disable-auto-logon.bat"
       ]
