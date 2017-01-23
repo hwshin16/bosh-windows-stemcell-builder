@@ -128,18 +128,7 @@
     {
       "type": "powershell",
       "scripts": [
-        "scripts/vm-guest-tools.ps1",
-        "../scripts/add-windows-features.ps1",
-        "scripts/add-vcap-group.ps1",
-        "scripts/run-policies.ps1",
-        "../scripts/setup_agent.ps1",
-        "scripts/agent_config.ps1",
-        "../scripts/cleanup-windows-features.ps1",
-        "../scripts/disable-services.ps1",
-        "../scripts/set-firewall.ps1",
-        "scripts/cleanup-temp-directories.ps1",
-        "scripts/compact.ps1",
-        "../scripts/cleanup-artifacts.ps1"
+        "../scripts/add-windows-features.ps1"
       ]
     }
   ]
