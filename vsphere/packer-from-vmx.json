@@ -1,0 +1,42 @@
+{
+    "variables": {
+
+    "memsize": "2048",
+    "numvcpus": "2",
+
+    "administrator_password": null
+
+  },
+  "builders": [
+    {
+      "type": "vmware-vmx",
+      "source_path": "/vmx-files/image.vmx",
+
+      "headless": true,
+      "boot_wait": "2m",
+
+      "communicator": "winrm",
+      "winrm_username": "Administrator",
+      "winrm_password": "{{user `administrator_password`}}",
+      "winrm_timeout": "72h",
+      "winrm_insecure": true,
+      "winrm_host": "127.0.0.1",
+
+      "shutdown_command": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -File a:\\sysprep.ps1 -NewPassword {{user `administrator_password`}}",
+      "shutdown_timeout": "1h",
+
+      "vnc_port_min": 5900,
+      "vnc_port_max": 5980,
+
+      "output_directory": "output-vmware-iso"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "powershell",
+      "scripts": [
+        "scripts/add-vcap-group.ps1"
+      ]
+    }
+  ]
+}
