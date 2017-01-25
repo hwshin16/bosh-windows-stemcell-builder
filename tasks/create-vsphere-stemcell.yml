@@ -12,6 +12,8 @@ inputs:
   - name: stemcell-builder
   - name: windows-stemcell-dependencies
   - name: base-iso
+  - name: image-disk1-vmdk
+  - name: image-vmx
 
 outputs:
   - name: bosh-windows-stemcell
