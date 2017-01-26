@@ -1,41 +1,76 @@
 {
     "variables": {
-
-    "memsize": "2048",
-    "numvcpus": "2",
-
-    "administrator_password": null
-
+    "administrator_password": "Password123!"
   },
   "builders": [
     {
       "type": "vmware-vmx",
-      "source_path": "/vmx-files/image.vmx",
+      "source_path": "/Volumes/SSD/vms/Packer.vmwarevm/Packer.vmx",
+      "output_directory": "output-vmware-iso",
 
-      "headless": true,
       "boot_wait": "2m",
+      "shutdown_timeout": "1h",
+      "shutdown_command": "C:\\Windows\\System32\\shutdown.exe -s",
 
       "communicator": "winrm",
       "winrm_username": "Administrator",
       "winrm_password": "{{user `administrator_password`}}",
-      "winrm_timeout": "72h",
-      "winrm_insecure": true,
-      "winrm_host": "127.0.0.1",
-
-      "shutdown_command": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -File a:\\sysprep.ps1 -NewPassword {{user `administrator_password`}}",
-      "shutdown_timeout": "1h",
-
-      "vnc_port_min": 5900,
-      "vnc_port_max": 5980,
-
-      "output_directory": "output-vmware-iso"
+      "winrm_timeout": "5m",
+      "winrm_insecure": true
     }
   ],
   "provisioners": [
     {
+      "type": "file",
+      "source": "scripts/sysprep.ps1",
+      "destination": "C:\\sysprep.ps1.zip"
+    },
+    {
+      "type": "file",
+      "source": "policy-baseline.zip",
+      "destination": "C:\\policy-baseline.zip"
+    },
+    {
+      "type": "file",
+      "source": "../compiled-agent/agent.zip",
+      "destination": "C:\\bosh\\agent.zip"
+    },
+    {
+      "type": "file",
+      "source": "../compiled-agent/agent-dependencies.zip",
+      "destination": "C:\\bosh\\agent-dependencies.zip"
+    },
+    {
+      "type": "file",
+      "source": "/Users/pivotal/workspace/windows-stemcell-dependencies/ultradefrag/ultradefrag.zip",
+      "destination": "C:\\ultradefrag.zip"
+    },
+    {
+      "type": "file",
+      "source": "/Users/pivotal/workspace/windows-stemcell-dependencies/lgpo/LGPO.exe",
+      "destination": "C:\\LGPO.exe"
+    },
+    {
+      "type": "windows-shell",
+      "scripts": [
+        "scripts/enable-rdp.bat",
+        "scripts/disable-auto-logon.bat"
+      ]
+    },
+    {
       "type": "powershell",
       "scripts": [
-        "scripts/add-vcap-group.ps1"
+        "../scripts/add-windows-features.ps1",
+        "scripts/add-vcap-group.ps1",
+        "scripts/run-policies.ps1",
+        "../scripts/setup_agent.ps1",
+        "scripts/agent_config.ps1",
+        "../scripts/cleanup-windows-features.ps1",
+        "../scripts/disable-services.ps1",
+        "../scripts/set-firewall.ps1",
+        "scripts/cleanup-temp-directories.ps1",
+        "scripts/compact.ps1",
+        "../scripts/cleanup-artifacts.ps1"
       ]
     }
   ]
