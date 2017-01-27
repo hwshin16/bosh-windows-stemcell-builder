@@ -5,7 +5,7 @@
   "builders": [
     {
       "type": "vmware-vmx",
-      "source_path": "/Volumes/SSD/vms/Packer.vmwarevm/Packer.vmx",
+      "source_path": "PATH TO WINDOWS VMX",
       "output_directory": "output-vmware-iso",
 
       "boot_wait": "2m",
