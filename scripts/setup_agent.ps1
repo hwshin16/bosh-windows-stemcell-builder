@@ -5,16 +5,6 @@ function Get-CurrentLineNumber {
     $MyInvocation.ScriptLineNumber
 }
 
-Add-Type -AssemblyName System.IO.Compression.FileSystem
-function Unzip
-{
-    param([string]$zipfile, [string]$outpath)
-
-    [System.IO.Compression.ZipFile]::ExtractToDirectory($zipfile, $outpath)
-
-    Remove-Item -Path $zipfile -Force
-}
-
 function setup-acl {
 
     param([string]$folder,[bool]$disableInheritance=$True)
@@ -56,8 +46,8 @@ New-Item -Path "C:\var\vcap\bosh\log" -ItemType "directory" -Force
 # Remove permissions for C:\var
 setup-acl "C:\var"
 
-Unzip "C:\bosh\agent-dependencies.zip" "C:\var\vcap\bosh\bin\"
-Unzip "C:\bosh\agent.zip" "C:\bosh\"
+Extract-Archive -Path "C:\bosh\agent-dependencies.zip" -DestinationPath "C:\var\vcap\bosh\bin\"
+Extract-Archive -Path "C:\bosh\agent.zip" -DestinationPath "C:\bosh\"
 Move-Item "C:\bosh\pipe.exe" "C:\var\vcap\bosh\bin\pipe.exe"
 
 $OldPath=(Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).Path
