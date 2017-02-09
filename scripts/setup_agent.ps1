@@ -39,12 +39,12 @@ Setx $env:PATH "${env:PATH};C:\var\vcap\bosh\bin" /m
 
 New-Item -Path "C:\bosh" -ItemType "directory" -Force
 # Remove permissions for C:\bosh directories.
-setup-acl "C:\bosh"
+#setup-acl "C:\bosh"
 
 New-Item -Path "C:\var\vcap\bosh\bin" -ItemType "directory" -Force
 New-Item -Path "C:\var\vcap\bosh\log" -ItemType "directory" -Force
 # Remove permissions for C:\var
-setup-acl "C:\var"
+#setup-acl "C:\var"
 
 Extract-Archive -Path "C:\bosh\agent-dependencies.zip" -DestinationPath "C:\var\vcap\bosh\bin\"
 Extract-Archive -Path "C:\bosh\agent.zip" -DestinationPath "C:\bosh\"
@@ -62,6 +62,6 @@ if ($LASTEXITCODE -ne 0) {
 
 
 # Remove permissions for C:\windows\panther directories.
-setup-acl "C:\Windows\Panther" $false
+#setup-acl "C:\Windows\Panther" $false
 
 Exit 0
