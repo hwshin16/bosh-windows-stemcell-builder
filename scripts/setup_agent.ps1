@@ -46,8 +46,8 @@ New-Item -Path "C:\var\vcap\bosh\log" -ItemType "directory" -Force
 # Remove permissions for C:\var
 #setup-acl "C:\var"
 
-Extract-Archive -Path "C:\bosh\agent-dependencies.zip" -DestinationPath "C:\var\vcap\bosh\bin\"
-Extract-Archive -Path "C:\bosh\agent.zip" -DestinationPath "C:\bosh\"
+Expand-Archive -Path "C:\bosh\agent-dependencies.zip" -DestinationPath "C:\var\vcap\bosh\bin\" -Force
+Expand-Archive -Path "C:\bosh\agent.zip" -DestinationPath "C:\bosh\" -Force
 Move-Item "C:\bosh\pipe.exe" "C:\var\vcap\bosh\bin\pipe.exe"
 
 $OldPath=(Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).Path
