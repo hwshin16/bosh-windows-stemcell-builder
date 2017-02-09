@@ -33,6 +33,7 @@ def parse_ami(line)
   return {:region=> region_id[0].chomp, :ami_id=> region_id[1].chomp}
 end
 
+
 def run_packer(config_path)
   Dir.chdir(File.dirname(config_path)) do
     command = %{

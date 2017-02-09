@@ -1,16 +1,12 @@
 <powershell>
-winrm quickconfig -q
-winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="300"}'
-winrm set winrm/config '@{MaxTimeoutms="1800000"}'
-winrm set winrm/config/service '@{AllowUnencrypted="true"}'
-winrm set winrm/config/service/auth '@{Basic="true"}'
+REG ADD HKLM\Software\Microsoft\Windows\CurrentVersion\WSMAN\Service /v allow_unencrypted /t REG_DWORD /d 1 /f
+REG ADD HKLM\Software\Microsoft\Windows\CurrentVersion\WSMAN\Service /v auth_basic /t REG_DWORD /d 1 /f
+REG ADD HKLM\Software\Microsoft\Windows\CurrentVersion\WSMAN\Client /v auth_basic /t REG_DWORD /d 1 /f
 
-netsh advfirewall firewall add rule name="WinRM 5985" protocol=TCP dir=in localport=5985 action=allow
-netsh advfirewall firewall add rule name="WinRM 5986" protocol=TCP dir=in localport=5986 action=allow
+netsh advfirewall firewall set rule group="Windows Remote Administration" new enable=yes
+netsh advfirewall firewall add rule name="WinRM-HTTP" dir=in localport=5985 protocol=TCP action=allow
 
-net stop winrm
-sc config winrm start=auto
-net start winrm
-
-Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope LocalMachine
+Set-Service winrm -startuptype "auto"
+Restart-Service winrm
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope LocalMachine -Force
 </powershell>
