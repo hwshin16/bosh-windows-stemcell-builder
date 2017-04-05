@@ -102,14 +102,20 @@ module Packer
         'destination' => 'C:\\windows\\LGPO.exe'
       }.freeze
 
+      def self.sysprep_shutdown(iaas, args)
+        return [
+          {
+            'type' => 'windows-shell',
+            'inline' => ["Invoke-Sysprep -IaaS #{iaas} #{args}"]
+          }
+        ]
+      end
+
       ##TO BE KEPT ^^^^
 
-      SET_EC2_PASSWORD = {
-        'type' => 'powershell',
-        'scripts' => ['scripts/aws/ec2-set-password.ps1']
-      }.freeze
-
       class Azure
+        # WARN (CEV): This user is destroyed by Sysprep - so whats the point?
+        # note I helped write this...
         def self.create_admin(admin_password)
           return {
             'type' => 'powershell',
@@ -119,12 +125,6 @@ module Packer
             ]
           }
         end
-
-        SYSPREP_SHUTDOWN = {
-          'type' => 'windows-shell',
-          'inline' => ['C:\\Windows\\System32\\Sysprep\\sysprep.exe /generalize /quiet /oobe /quit']
-        }.freeze
-
       end
     end
   end

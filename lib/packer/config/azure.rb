@@ -57,7 +57,7 @@ module Packer
           #Provisioners.download_windows_updates(@output_directory).freeze,
         ] <<
         Base.instance_method(:post_provisioners).bind(self).call <<
-        [ Provisioners::Azure::SYSPREP_SHUTDOWN ]).flatten
+        [ Provisioners::sysprep_shutdown('azure', '').freeze ]).flatten
       end
     end
   end
