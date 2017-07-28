@@ -103,6 +103,16 @@ function Create-Unattend {
                 </RunSynchronousCommand>
 "@
                 })
+                $(if ($RandomizePassword) {
+@"
+                <RunSynchronousCommand wcm:action="add">
+                    <Description>Set Administrator Password to Random Value</Description>
+                    <Order>3</Order>
+                    <Path>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -Command Set-RandomPassword Administrator</Path>
+                    <WillReboot>Never</WillReboot>
+                </RunSynchronousCommand>
+"@
+                })
             </RunSynchronous>
         </component>
         <component xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Microsoft-Windows-ServerManager-SvrMgrNc" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
@@ -138,6 +148,15 @@ function Create-Unattend {
                     <Order>1</Order>
                     <Description>Disable Windows Updates</Description>
                 </SynchronousCommand>
+                $(if ($RandomizePassword) {
+@"
+                <SynchronousCommand wcm:action="add">
+                    <CommandLine>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -Command Set-RandomPassword Administrator</CommandLine>
+                    <Order>2</Order>
+                    <Description>Set Administrator Password to Random Value</Description>
+                </SynchronousCommand>
+"@
+                })
             </FirstLogonCommands>
             <OOBE>
                 <HideEULAPage>true</HideEULAPage>
