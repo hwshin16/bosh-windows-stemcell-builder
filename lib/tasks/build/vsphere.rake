@@ -84,7 +84,8 @@ namespace :build do
       version: version,
       enable_rdp: ENV['ENABLE_RDP'] ? (ENV['ENABLE_RDP'].downcase == 'true') : false,
       enable_kms: ENV['ENABLE_KMS'] ? (ENV['ENABLE_KMS'].downcase == 'true') : false,
-      kms_host: ENV.fetch('KMS_HOST', '')
+      kms_host: ENV.fetch('KMS_HOST', ''),
+      randomize_password: ENV['RANDOMIZE_PASSWORD'] ? (ENV['RANDOMIZE_PASSWORD'].downcase == 'true') : false
     )
 
     vsphere.build

@@ -145,6 +145,7 @@ describe Stemcell::Builder do
           enable_kms: false,
           kms_host: '',
           new_password: '',
+          randomize_password: false,
           skip_windows_update: false
         ).and_return(packer_config)
 
@@ -204,6 +205,7 @@ describe Stemcell::Builder do
             enable_kms: false,
             kms_host: '',
             new_password: '',
+            randomize_password: false,
             skip_windows_update: false
           ).and_return(packer_config)
 

@@ -47,7 +47,8 @@ function Create-Unattend {
       [string]$Organization,
       [string]$Owner,
       [switch]$SkipLGPO,
-      [switch]$EnableRDP
+      [switch]$EnableRDP,
+      [switch]$RandomizePassword
    )
 
    $NewPassword = [system.convert]::ToBase64String([system.text.encoding]::Unicode.GetBytes($NewPassword + "AdministratorPassword"))
@@ -324,7 +325,8 @@ function Invoke-Sysprep() {
       [string]$Organization="",
       [string]$Owner="",
       [switch]$SkipLGPO,
-      [switch]$EnableRDP
+      [switch]$EnableRDP,
+      [switch]$RandomizePassword
    )
 
    Write-Log "Invoking Sysprep for IaaS: ${IaaS}"
@@ -355,7 +357,7 @@ function Invoke-Sysprep() {
       }
       "vsphere" {
          Create-Unattend -NewPassword $NewPassword -ProductKey $ProductKey `
-           -Organization $Organization -Owner $Owner -SkipLGPO:$SkipLGPO -EnableRDP:$EnableRDP
+           -Organization $Organization -Owner $Owner -SkipLGPO:$SkipLGPO -EnableRDP:$EnableRDP -RandomizePassword:$RandomizePassword
 
          # Exec sysprep and shutdown
          C:/windows/system32/sysprep/sysprep.exe /generalize /oobe `

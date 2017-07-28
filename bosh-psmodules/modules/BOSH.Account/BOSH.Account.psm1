@@ -39,3 +39,25 @@ function Remove-Account {
     $adsi.Delete('User', $User)
     Move-Item -Path "C:\Users\$User" -Destination "$env:windir\Temp\$User" -Force
 }
+
+<#
+.Synopsis
+Set random password for user
+.Description
+This cmdlet sets a random password for a Windows user
+#>
+function Set-RandomPassword {
+    Param(
+            [string]$User = $(Throw "Provide a user name")
+         )
+
+    # Generate random password
+    $Length = 14
+    $NonAlphaNumeric = 7
+    Add-Type -AssemblyName System.Web
+    $Password = [System.Web.Security.Membership]::GeneratePassword($Length,$NonAlphaNumeric)
+
+    Write-Log "Setting password for $User."
+    & NET USER $User $Password /expires:never
+
+}

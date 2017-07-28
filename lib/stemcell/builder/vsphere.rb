@@ -49,11 +49,20 @@ module Stemcell
     end
 
     class VSphere < VSphereBase
-      def initialize(product_key:, owner:, organization:, new_password:, skip_windows_update:false,**args)
+      def initialize(
+        product_key:,
+        owner:,
+        organization:,
+        new_password:,
+        randomize_password:false,
+        skip_windows_update:false,
+        **args
+      )
         @product_key = product_key
         @owner = owner
         @organization = organization
         @new_password = new_password
+        @randomize_password = randomize_password
         @skip_windows_update = skip_windows_update
         super(args)
       end
@@ -68,6 +77,7 @@ module Stemcell
         Packer::Config::VSphere.new(
           administrator_password: @administrator_password,
           new_password: @new_password,
+          randomize_password: @randomize_password,
           source_path: @source_path,
           output_directory: @output_directory,
           mem_size: @mem_size,

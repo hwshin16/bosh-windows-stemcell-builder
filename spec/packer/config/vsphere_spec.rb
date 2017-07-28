@@ -78,23 +78,28 @@ describe Packer::Config do
   end
 
   describe 'VSphere' do
+    let(:config) {
+      {
+        output_directory: 'output_directory',
+        num_vcpus: 1,
+        mem_size: 1000,
+        product_key: 'key',
+        organization: 'me',
+        owner: 'me',
+        administrator_password: 'password',
+        source_path: 'source_path',
+        os: 'windows2012R2',
+        enable_rdp: false,
+        enable_kms: false,
+        kms_host: '',
+        new_password: 'new-password',
+        randomize_password: false
+      }
+    }
+
     describe 'builders' do
       it 'returns the expected builders' do
-        builders = Packer::Config::VSphere.new(
-          output_directory: 'output_directory',
-          num_vcpus: 1,
-          mem_size: 1000,
-          product_key: 'key',
-          organization: 'me',
-          owner: 'me',
-          administrator_password: 'password',
-          source_path: 'source_path',
-          os: 'windows2012R2',
-          enable_rdp: false,
-          enable_kms: false,
-          kms_host: '',
-          new_password: 'new-password'
-        ).builders
+        builders = Packer::Config::VSphere.new(config).builders
         expect(builders[0]).to eq(
           'type' => 'vmware-vmx',
           'source_path' => 'source_path',
@@ -120,41 +125,29 @@ describe Packer::Config do
       end
 
       it 'adds the EnableRdp flag to shutdown command' do
-        builders = Packer::Config::VSphere.new(
-          output_directory: 'output_directory',
-          num_vcpus: 1,
-          mem_size: 1000,
-          product_key: 'key',
-          organization: 'me',
-          owner: 'me',
-          administrator_password: 'password',
-          source_path: 'source_path',
-          os: 'windows2012R2',
-          enable_rdp: true,
-          enable_kms: false,
-          kms_host: '',
-          new_password: 'new-password'
-        ).builders
+        config[:enable_rdp] = true
+        builders = Packer::Config::VSphere.new(config).builders
         expect(builders[0]['shutdown_command']).to eq 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -Command Invoke-Sysprep -IaaS vsphere -NewPassword new-password -ProductKey key -Owner me -Organization me -EnableRdp'
       end
 
       it 'does not include -ProductKey if product key is empty string' do
-        builders = Packer::Config::VSphere.new(
-          output_directory: 'output_directory',
-          num_vcpus: 1,
-          mem_size: 1000,
-          product_key: '',
-          organization: 'me',
-          owner: 'me',
-          administrator_password: 'password',
-          source_path: 'source_path',
-          os: 'windows2012R2',
-          enable_rdp: true,
-          enable_kms: false,
-          kms_host: '',
-          new_password: 'new-password'
-        ).builders
-        expect(builders[0]['shutdown_command']).to eq 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -Command Invoke-Sysprep -IaaS vsphere -NewPassword new-password -Owner me -Organization me -EnableRdp'
+        config[:product_key] = ''
+        builders = Packer::Config::VSphere.new(config).builders
+        expect(builders[0]['shutdown_command']).to eq 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -Command Invoke-Sysprep -IaaS vsphere -NewPassword new-password -Owner me -Organization me'
+      end
+
+      context 'randomize_password' do
+        subject { (Packer::Config::VSphere.new(config).builders[0]['shutdown_command']) }
+        context 'when false' do
+          before { config[:randomize_password] = false }
+          it { should eq('C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -Command Invoke-Sysprep -IaaS vsphere -NewPassword new-password -ProductKey key -Owner me -Organization me') }
+        end
+        context 'when true' do
+          before {
+            config[:randomize_password] = true
+          }
+          it { should eq('C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -Command Invoke-Sysprep -IaaS vsphere -NewPassword new-password -ProductKey key -Owner me -Organization me -RandomizePassword') }
+        end
       end
     end
 
@@ -165,21 +158,7 @@ describe Packer::Config do
 
         allow(SecureRandom).to receive(:hex).and_return('some-password')
 
-        provisioners = Packer::Config::VSphere.new(
-          output_directory: 'output_directory',
-          num_vcpus: 1,
-          mem_size: 1000,
-          product_key: 'key',
-          organization: 'me',
-          owner: 'me',
-          administrator_password: 'password',
-          source_path: 'source_path',
-          os: 'windows2012R2',
-          enable_rdp: false,
-          enable_kms: false,
-          kms_host: '',
-          new_password: 'new-password'
-        ).provisioners
+        provisioners = Packer::Config::VSphere.new(config).provisioners
         expected_provisioners_except_lgpo = [
           {"type"=>"file", "source"=>"build/bosh-psmodules.zip", "destination"=>"C:\\provision\\bosh-psmodules.zip"},
           {"type"=>"powershell", "scripts"=>["scripts/install-bosh-psmodules.ps1"]},
@@ -216,21 +195,10 @@ describe Packer::Config do
 
         allow(SecureRandom).to receive(:hex).and_return('some-password')
 
-        provisioners = Packer::Config::VSphere.new(
-          output_directory: 'output_directory',
-          num_vcpus: 1,
-          mem_size: 1000,
-          product_key: 'key',
-          organization: 'me',
-          owner: 'me',
-          administrator_password: 'password',
-          source_path: 'source_path',
-          os: 'windows2012R2',
-          enable_rdp: false,
-          enable_kms: true,
-          kms_host: "myhost.com",
-          new_password: 'new-password'
-        ).provisioners
+        config[:enable_kms] = true
+        config[:kms_host] = "myhost.com"
+
+        provisioners = Packer::Config::VSphere.new(config).provisioners
         expect(provisioners).to include(
           {
             "type"=>"powershell",

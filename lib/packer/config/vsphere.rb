@@ -73,6 +73,7 @@ module Packer
                      enable_kms:,
                      kms_host:,
                      new_password:,
+                     randomize_password:,
                      **args)
         @product_key = product_key
         @owner = owner
@@ -81,18 +82,20 @@ module Packer
         @enable_kms = enable_kms
         @kms_host = kms_host
         @new_password = new_password
+        @randomize_password = randomize_password
         super(args)
       end
 
       def builders
         enable_rdp = @enable_rdp ? ' -EnableRdp' : ''
         product_key_flag = @product_key.to_s.empty? ? '' : " -ProductKey #{@product_key}"
+        randomize_password_flag = @randomize_password ? ' -RandomizePassword' : ''
         [
           'type' => 'vmware-vmx',
           'source_path' => @source_path,
           'headless' => false,
           'boot_wait' => '2m',
-          'shutdown_command' => "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -Command Invoke-Sysprep -IaaS vsphere -NewPassword #{@new_password}#{product_key_flag} -Owner #{@owner} -Organization #{@organization}#{enable_rdp}",
+          'shutdown_command' => "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -Command Invoke-Sysprep -IaaS vsphere -NewPassword #{@new_password}#{product_key_flag} -Owner #{@owner} -Organization #{@organization}#{enable_rdp}#{randomize_password_flag}",
           'shutdown_timeout' => '1h',
           'communicator' => 'winrm',
           'ssh_username' => 'Administrator',
