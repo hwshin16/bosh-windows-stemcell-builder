@@ -28,6 +28,12 @@ function Enable-LocalSecurityPolicy {
 
     Write-Log "Starting LocalSecurityPolicy"
 
+    # Record the current values
+    $AUOptionsPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update"
+    Write-Log "Current value: ${Get-ItemProperty $AUOptionsPath}"
+    $OtherAUOptionsPath = "HKLM:\Software\Policies\Microsoft\Windows\WindowsUpdate\AU"
+    Write-Log "Current value: ${Get-ItemProperty $OtherAUOptionsPath}"
+
     # Apply MSL1
 
     $policyZipFile = Join-Path $PSScriptRoot "cis-policy-baseline.zip"
@@ -43,6 +49,12 @@ function Enable-LocalSecurityPolicy {
 
     # Reapply the current default values
 
+    # Record the current values after applying policy
+    $AUOptionsPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update"
+    Write-Log "Current value: ${Get-ItemProperty $AUOptionsPath}"
+    $OtherAUOptionsPath = "HKLM:\Software\Policies\Microsoft\Windows\WindowsUpdate\AU"
+    Write-Log "Current value: ${Get-ItemProperty $OtherAUOptionsPath}"
+
     $LGPODefaultsDirectory = "C:\bosh\lgpo-defaults"
     New-Item -Path $LGPODefaultsDirectory -ItemType Directory -Force
     $InfFileContents=@"
@@ -55,6 +67,8 @@ Revision=1
 [System Access]
 MinimumPasswordAge=0
 EnableAdminAccount=1
+NewAdministratorName = \"Administrator\"
+NewGuestName = \"Guest\"
 [Privilege Rights]
 "@
     $InfFileContents | Out-File -FilePath "$LGPODefaultsDirectory\defaults.inf" -Encoding unicode -Force
@@ -62,6 +76,7 @@ EnableAdminAccount=1
     Run-Lgpo -ArgumentList "/s $LGPODefaultsDirectory\defaults.inf" -LogDir $PolicyDestination\Undo-MSL1-Logs
 
     Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" "EnableICMPRedirect" 1
+    Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" "CachedAUOptions" 1
 
     # Removing L1 registry keys that may break the BOSH stemcell (currently unknown if they do)
     Remove-ItemProperty "HKLM:\Software\Policies\Microsoft Services\AdmPwd" "AdmPwdEnabled"
