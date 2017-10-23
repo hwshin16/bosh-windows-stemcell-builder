@@ -213,7 +213,7 @@ function Disable-NetBIOS {
     # Disable NetBIOS over TCP at the network interface level
 
     $NoInstances=$false
-    WMIC.exe NICCONFIG WHERE '(TcpipNetbiosOptions=0 OR TcpipNetbiosOptions=1)' GET Caption,Index,TcpipNetbiosOptions 2>&1 | foreach {
+    WMIC.exe NICCONFIG WHERE '(TcpipNetbiosOptions=0 OR TcpipNetbiosOptions=1)' GET 'Caption,Index,TcpipNetbiosOptions' 2>&1 | foreach {
         $NoInstances = $NoInstances -or $_ -like '*No Instance(s) Available*'
     }
     if ($NoInstances) {
@@ -221,10 +221,10 @@ function Disable-NetBIOS {
     } else {
         # List Interfaces that will be changed
         Write-Log "NetBIOS over TCP will be disabled on the following network interfaces:"
-        WMIC.exe NICCONFIG WHERE '(TcpipNetbiosOptions=0 OR TcpipNetbiosOptions=1)' GET Caption,Index,TcpipNetbiosOptions
+        WMIC.exe NICCONFIG WHERE '(TcpipNetbiosOptions=0 OR TcpipNetbiosOptions=1)' GET 'Caption,Index,TcpipNetbiosOptions'
 
         # Disable NetBIOS over TCP
-        WMIC.exe NICCONFIG WHERE '(TcpipNetbiosOptions=0 OR TcpipNetbiosOptions=1)' CALL SetTcpipNetbios 2
+        WMIC.exe NICCONFIG WHERE '(TcpipNetbiosOptions=0 OR TcpipNetbiosOptions=1)' CALL 'SetTcpipNetbios' 2
     }
 
     # Disable NetBIOS firewall rules
