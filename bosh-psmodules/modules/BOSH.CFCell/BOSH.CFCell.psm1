@@ -211,7 +211,7 @@ function check-firewall {
 function Disable-NetBIOS {
 
     # Disable NetBIOS over TCP at the network interface level
-
+    throw "lskdjflsdkfjdlskfjdsklfjsdlkfjsdkl"
     $NoInstances=$false
     WMIC.exe NICCONFIG WHERE '(TcpipNetbiosOptions=0 OR TcpipNetbiosOptions=1)' GET 'Caption,Index,TcpipNetbiosOptions' 2>&1 | foreach {
         $NoInstances = $NoInstances -or $_ -like '*No Instance(s) Available*'
